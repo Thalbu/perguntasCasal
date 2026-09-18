@@ -1,38 +1,65 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
+
+const ouvintes = new Set<() => void>();
+
+function inscrever(fn: () => void) {
+  ouvintes.add(fn);
+  window.addEventListener("storage", fn);
+  return () => {
+    ouvintes.delete(fn);
+    window.removeEventListener("storage", fn);
+  };
+}
+
+function ler(chave: string) {
+  try {
+    return localStorage.getItem(chave);
+  } catch {
+    // modo privado ou storage bloqueado
+    return null;
+  }
+}
 
 /**
- * Estado persistido no localStorage. Some no SSR e volta no primeiro efeito,
- * por isso `pronto` — sem ele a home pisca o formulário de nomes.
+ * Estado espelhado no localStorage. Via useSyncExternalStore para não
+ * escrever estado dentro de efeito na hidratação.
+ *
+ * `pronto` é false no servidor e no primeiro render do cliente: sem isso a
+ * home pisca o formulário de nomes antes de saber que já existem nomes.
  */
 export function usePersistido<T>(chave: string, inicial: T) {
-  const [valor, setValor] = useState<T>(inicial);
-  const [pronto, setPronto] = useState(false);
-
-  useEffect(() => {
-    try {
-      const cru = localStorage.getItem(chave);
-      if (cru !== null) setValor(JSON.parse(cru) as T);
-    } catch {
-      // storage bloqueado ou JSON corrompido: segue com o valor inicial
-    }
-    setPronto(true);
-  }, [chave]);
+  // undefined = ainda não hidratou (render do servidor). null = hidratou e
+  // não há nada guardado. Os dois casos precisam ser distinguíveis.
+  const cru = useSyncExternalStore<string | null | undefined>(
+    inscrever,
+    () => ler(chave),
+    () => undefined,
+  );
 
   const salvar = useCallback(
     (novo: T) => {
-      setValor(novo);
       try {
         localStorage.setItem(chave, JSON.stringify(novo));
       } catch {
-        // modo privado: o jogo continua, só não persiste
+        // o jogo continua, só não persiste
       }
+      ouvintes.forEach((fn) => fn());
     },
     [chave],
   );
 
-  return { valor, salvar, pronto };
+  let valor = inicial;
+  if (cru) {
+    try {
+      valor = JSON.parse(cru) as T;
+    } catch {
+      // JSON corrompido: cai no inicial
+    }
+  }
+
+  return { valor, salvar, pronto: cru !== undefined };
 }
 
 export type Casal = { a: string; b: string };
