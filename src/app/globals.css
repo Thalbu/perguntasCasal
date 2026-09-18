@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  /* paleta romântico moderno */
+  --coral: #ff6b6b;
+  --rosa: #ff8fa3;
+  --ambar: #ffc48c;
+  --vinho: #7a2233;
+  --creme: #fff8f3;
+  --carvao: #2b1b1f;
+}
+
+@theme inline {
+  --color-coral: var(--coral);
+  --color-rosa: var(--rosa);
+  --color-ambar: var(--ambar);
+  --color-vinho: var(--vinho);
+  --color-creme: var(--creme);
+  --color-carvao: var(--carvao);
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+
+  --radius-card: 28px;
+  --shadow-card: 0 24px 60px -12px rgb(122 34 51 / 0.35);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--carvao);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  /* gradiente quente que respira devagar */
+  background: linear-gradient(
+    135deg,
+    var(--coral) 0%,
+    var(--rosa) 45%,
+    var(--ambar) 100%
+  );
+  background-size: 200% 200%;
+  animation: respira 18s ease-in-out infinite;
+}
+
+@keyframes respira {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
