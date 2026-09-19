@@ -7,9 +7,11 @@ import { Botao } from "@/components/Botao";
 import { BotaoTema } from "@/components/BotaoTema";
 import { CampoNome } from "@/components/CampoNome";
 import { CardModo } from "@/components/CardModo";
+import { Estatisticas } from "@/components/Estatisticas";
 import { Favoritas } from "@/components/Favoritas";
 import { Historico } from "@/components/Historico";
 import { Memorias } from "@/components/Memorias";
+import { PerguntaDoDia } from "@/components/PerguntaDoDia";
 import { MODOS } from "@/data";
 import { useCasal } from "@/lib/armazenamento";
 
@@ -47,11 +49,14 @@ export default function Home() {
 
       {!pronto ? null : nomeado ? (
         <>
+          <PerguntaDoDia />
+
           <div className="flex flex-col gap-3">
             {MODOS.map((modo, i) => (
               <CardModo key={modo.id} modo={modo} indice={i} />
             ))}
           </div>
+          <Estatisticas />
           <Memorias />
           <Favoritas />
           <Historico />
