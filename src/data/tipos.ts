@@ -40,6 +40,15 @@ export type Desafio = {
   nivel: Nivel;
 };
 
+/**
+ * O que aparece no card. A sessão trabalha com cartas, não com perguntas:
+ * os modos novos misturam desafios e apostas na mesma sequência.
+ */
+export type Carta =
+  | { tipo: "pergunta"; id: string; texto: string; nivel: Nivel }
+  | { tipo: "desafio"; id: string; texto: string; nivel: Nivel }
+  | { tipo: "aposta"; id: string; texto: string; nivel: Nivel };
+
 export type Categoria = {
   id: CategoriaId;
   nome: string;

@@ -12,12 +12,15 @@ export function CardPergunta({
   dica,
   aberto,
   onAbrir,
+  variante = "pergunta",
 }: {
   texto: string;
   chamada: string;
   dica: string;
   aberto: boolean;
   onAbrir: () => void;
+  /** desafio ganha frente escura: é uma carta de ação, não de conversa */
+  variante?: "pergunta" | "desafio";
 }) {
   return (
     <div className="[perspective:1400px]">
@@ -37,8 +40,16 @@ export function CardPergunta({
         className="grid min-h-60 w-full [transform-style:preserve-3d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
         {/* frente: a pergunta */}
-        <span className="col-start-1 row-start-1 flex items-center rounded-[var(--radius-card)] bg-creme p-8 shadow-[var(--shadow-card)] [backface-visibility:hidden]">
-          <span className="font-display text-3xl leading-snug text-vinho text-left">
+        <span
+          className={`col-start-1 row-start-1 flex items-center rounded-[var(--radius-card)] p-8 shadow-[var(--shadow-card)] [backface-visibility:hidden] ${
+            variante === "desafio" ? "bg-vinho" : "bg-creme"
+          }`}
+        >
+          <span
+            className={`font-display text-3xl leading-snug text-left ${
+              variante === "desafio" ? "text-creme" : "text-vinho"
+            }`}
+          >
             {texto}
           </span>
         </span>
