@@ -38,6 +38,14 @@ export type Sessao = Resultado & {
   comecar: (nivel?: Nivel) => void;
   /** Avança registrando o que aconteceu nesta carta. */
   avancar: (registro?: { acertou?: boolean; apontado?: 0 | 1 }) => void;
+  /**
+   * Troca a carta atual por outra do baralho, sem avançar o progresso.
+   * Existe pro caso de alguém não querer responder — sem isso a única
+   * saída é abandonar a partida, o que no Picante é sério.
+   */
+  pular: () => void;
+  /** Sobrou carta pra substituir a atual? */
+  podePular: boolean;
   reiniciar: () => void;
 };
 
@@ -53,21 +61,28 @@ function contar(rodadas: Rodada[]): Resultado {
 
 export function useSessao(
   modo: Modo,
+  vistas: Set<string>,
   /** chamado no fim da última rodada, ainda dentro do evento de clique */
   aoTerminar?: (resultado: Resultado, cartas: number) => void,
 ): Sessao {
   const [rodadas, setRodadas] = useState<Rodada[]>([]);
   const [indice, setIndice] = useState(0);
   const [fase, setFase] = useState<Fase>("intro");
+  /** cartas sorteadas além das que entraram em jogo, reservadas pro pular */
+  const [reserva, setReserva] = useState<Carta[]>([]);
 
   const comecar = useCallback(
     (nivel?: Nivel) => {
-      const cartas = montarBaralho(modo, nivel);
-      setRodadas(cartas.map((carta, i) => ({ carta, vez: (i % 2) as 0 | 1 })));
+      const tamanho = modo.tamanho ?? PERGUNTAS_POR_SESSAO;
+      const cartas = montarBaralho(modo, nivel, vistas);
+      setRodadas(
+        cartas.slice(0, tamanho).map((carta, i) => ({ carta, vez: (i % 2) as 0 | 1 })),
+      );
+      setReserva(cartas.slice(tamanho));
       setIndice(0);
       setFase("jogando");
     },
-    [modo],
+    [modo, vistas],
   );
 
   const avancar = useCallback(
@@ -89,8 +104,18 @@ export function useSessao(
     [aoTerminar, indice, rodadas],
   );
 
+  const pular = useCallback(() => {
+    const [proxima, ...resto] = reserva;
+    if (!proxima) return;
+    setReserva(resto);
+    setRodadas((atuais) =>
+      atuais.map((r, i) => (i === indice ? { ...r, carta: proxima } : r)),
+    );
+  }, [indice, reserva]);
+
   const reiniciar = useCallback(() => {
     setRodadas([]);
+    setReserva([]);
     setIndice(0);
     setFase("intro");
   }, []);
@@ -104,6 +129,8 @@ export function useSessao(
     ...contar(rodadas),
     comecar,
     avancar,
+    pular,
+    podePular: reserva.length > 0,
     reiniciar,
   };
 }

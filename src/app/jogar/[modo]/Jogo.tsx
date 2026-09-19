@@ -9,8 +9,10 @@ import { Confete } from "@/components/Confete";
 import { Progresso } from "@/components/Progresso";
 import { NIVEIS, type Carta, type Modo, type Nivel } from "@/data";
 import { useCasal } from "@/lib/armazenamento";
+import { useFavoritas } from "@/lib/favoritas";
 import { useHistorico } from "@/lib/historico";
 import { useSessao, type Resultado } from "@/lib/sessao";
+import { useVistas } from "@/lib/vistas";
 
 export function Jogo({ modo }: { modo: Modo }) {
   const { valor: casal, pronto } = useCasal();
@@ -20,6 +22,12 @@ export function Jogo({ modo }: { modo: Modo }) {
   const aponta = modo.mecanica === "escolher";
 
   const { registrar } = useHistorico();
+  const { vistas, marcar } = useVistas();
+  const { favoritas, alternar } = useFavoritas();
+
+  // Set recriado a cada render é barato e evita guardar estado duplicado
+  const jaVistas = new Set(vistas);
+
   const aoTerminar = useCallback(
     (r: Resultado, total: number) =>
       registrar({
@@ -31,7 +39,7 @@ export function Jogo({ modo }: { modo: Modo }) {
     [registrar, modo.id, pontua],
   );
 
-  const sessao = useSessao(modo, aoTerminar);
+  const sessao = useSessao(modo, jaVistas, aoTerminar);
   const nomes: [string, string] = [casal.a || "Você", casal.b || "Amor"];
 
   return (
@@ -73,7 +81,13 @@ export function Jogo({ modo }: { modo: Modo }) {
             sobre={nomes[sessao.atual.vez === 0 ? 1 : 0]}
             nomes={nomes}
             pontua={pontua}
-            onAvancar={sessao.avancar}
+            favoritada={favoritas.some((f) => f.id === sessao.atual!.carta.id)}
+            onFavoritar={alternar}
+            onPular={sessao.podePular ? sessao.pular : undefined}
+            onAvancar={(r) => {
+              marcar([sessao.atual!.carta.id]);
+              sessao.avancar(r);
+            }}
           />
         )}
       </AnimatePresence>
@@ -173,6 +187,9 @@ function Rodada({
   sobre,
   nomes,
   pontua,
+  favoritada,
+  onFavoritar,
+  onPular,
   onAvancar,
 }: {
   carta: Carta;
@@ -180,6 +197,9 @@ function Rodada({
   sobre: string;
   nomes: [string, string];
   pontua: boolean;
+  favoritada: boolean;
+  onFavoritar: (c: { id: string; texto: string }) => void;
+  onPular?: () => void;
   onAvancar: (r?: Registro) => void;
 }) {
   const [aberto, setAberto] = useState(false);
@@ -233,6 +253,28 @@ function Rodada({
           variante={desafio ? "desafio" : "pergunta"}
         />
       </div>
+
+      {aberto && (
+        <div className="flex justify-center gap-4 text-sm">
+          <button
+            type="button"
+            onClick={() => onFavoritar({ id: carta.id, texto })}
+            aria-pressed={favoritada}
+            className="min-h-11 px-2 text-white/85 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          >
+            {favoritada ? "♥ Guardada" : "♡ Guardar"}
+          </button>
+          {onPular && (
+            <button
+              type="button"
+              onClick={onPular}
+              className="min-h-11 px-2 text-white/85 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              Pular essa
+            </button>
+          )}
+        </div>
+      )}
 
       {aberto && (
         <>

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Botao } from "@/components/Botao";
 import { CampoNome } from "@/components/CampoNome";
 import { CardModo } from "@/components/CardModo";
+import { Favoritas } from "@/components/Favoritas";
 import { Historico } from "@/components/Historico";
 import { MODOS } from "@/data";
 import { useCasal } from "@/lib/armazenamento";
@@ -38,6 +39,7 @@ export default function Home() {
               <CardModo key={modo.id} modo={modo} indice={i} />
             ))}
           </div>
+          <Favoritas />
           <Historico />
           <Botao
             variante="fantasma"

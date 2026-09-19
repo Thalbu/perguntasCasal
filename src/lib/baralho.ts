@@ -7,6 +7,7 @@ import {
   type Nivel,
 } from "@/data";
 import { embaralhar } from "./embaralhar";
+import { inedito } from "./vistas";
 
 /** Quantas cartas do nível mais baixo abrem a sessão. */
 const ABERTURA = 3;
@@ -42,40 +43,66 @@ export type Trecho = {
   categorias?: Modo["categorias"];
 };
 
-function sortear(t: Trecho, nivelMaximo: Nivel): Carta[] {
+function sortear(t: Trecho, nivelMaximo: Nivel, vistas: Set<string>): Carta[] {
   const nivel = t.nivel && t.nivel > nivelMaximo ? nivelMaximo : t.nivel;
 
   if (t.fonte === "desafio") {
     const pool = desafios.filter((d) => (nivel ? d.nivel === nivel : true));
-    return embaralhar(pool.map(carta("desafio"))).slice(0, t.quantidade);
+    return embaralhar(inedito(pool.map(carta("desafio")), vistas, t.quantidade)).slice(
+      0,
+      t.quantidade,
+    );
   }
   if (t.fonte === "aposta") {
     const pool = apostas.filter((a) => (nivel ? a.nivel === nivel : true));
-    return embaralhar(pool.map(carta("aposta"))).slice(0, t.quantidade);
+    return embaralhar(inedito(pool.map(carta("aposta")), vistas, t.quantidade)).slice(
+      0,
+      t.quantidade,
+    );
   }
   const pool = perguntas({
     categorias: t.categorias,
     nivelMinimo: nivel,
     nivelMaximo: nivel ?? nivelMaximo,
   });
-  return embaralhar(pool.map(carta("pergunta"))).slice(0, t.quantidade);
+  return embaralhar(inedito(pool.map(carta("pergunta")), vistas, t.quantidade)).slice(
+    0,
+    t.quantidade,
+  );
 }
 
 /**
  * Monta as cartas de uma partida. Cada mecânica tem uma regra própria de
  * composição; o resto do jogo não precisa saber qual é.
  */
-export function montarBaralho(modo: Modo, nivelEscolhido?: Nivel): Carta[] {
+export function montarBaralho(
+  modo: Modo,
+  nivelEscolhido?: Nivel,
+  vistas: Set<string> = new Set(),
+  /** cartas a mais, guardadas como reserva pro botão de pular */
+  extra = 6,
+): Carta[] {
   const teto = nivelEscolhido ?? modo.faixa?.max ?? 5;
-  const tamanho = modo.tamanho ?? 12;
+  const tamanho = (modo.tamanho ?? 12) + extra;
+
+  /** descarta o que já saiu, a menos que sobre pouco pra montar a partida */
+  const novas = (pool: Carta[], quantos: number) => inedito(pool, vistas, quantos);
 
   if (modo.roteiro) {
-    return modo.roteiro.flatMap((t) => sortear(t, teto));
+    const roteiro = modo.roteiro.flatMap((t) => sortear(t, teto, vistas));
+    const usados = new Set([...vistas, ...roteiro.map((c) => c.id)]);
+    // a reserva vem depois do roteiro, então pular não desmonta a sequência
+    const sobra = sortear(
+      { fonte: "pergunta", quantidade: extra, categorias: modo.categorias },
+      teto,
+      usados,
+    );
+    return [...roteiro, ...sobra];
   }
 
   if (modo.mecanica === "escolher") {
     const pool = apostas.filter((a) => a.nivel <= teto).map(carta("aposta"));
-    return escada(pool, tamanho);
+    return escada(novas(pool, tamanho), tamanho);
   }
 
   const base = perguntas({
@@ -84,12 +111,13 @@ export function montarBaralho(modo: Modo, nivelEscolhido?: Nivel): Carta[] {
     nivelMaximo: teto,
   }).map(carta("pergunta"));
 
-  if (!modo.misturaDesafios) return escada(base, tamanho);
+  if (!modo.misturaDesafios) return escada(novas(base, tamanho), tamanho);
 
   // Verdade ou Desafio: uma carta de ação a cada três perguntas
   const acoes = desafios.filter((d) => d.nivel <= teto).map(carta("desafio"));
-  const perg = escada(base, Math.ceil((tamanho * 2) / 3));
-  const des = escada(acoes, tamanho - perg.length);
+  const alvoPerg = Math.ceil((tamanho * 2) / 3);
+  const perg = escada(novas(base, alvoPerg), alvoPerg);
+  const des = escada(novas(acoes, tamanho - perg.length), tamanho - perg.length);
 
   const misturado: Carta[] = [];
   let i = 0;
