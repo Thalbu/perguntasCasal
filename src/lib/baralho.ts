@@ -81,6 +81,8 @@ export function montarBaralho(
   vistas: Set<string> = new Set(),
   /** cartas a mais, guardadas como reserva pro botão de pular */
   extra = 6,
+  /** perguntas escritas pelo casal, misturadas às do app */
+  nossas: { carta: Carta; categoria: string }[] = [],
 ): Carta[] {
   const teto = nivelEscolhido ?? modo.faixa?.max ?? 5;
   const tamanho = (modo.tamanho ?? 12) + extra;
@@ -105,11 +107,23 @@ export function montarBaralho(
     return escada(novas(pool, tamanho), tamanho);
   }
 
-  const base = perguntas({
-    categorias: modo.categorias,
-    nivelMinimo: modo.faixa?.min,
-    nivelMaximo: teto,
-  }).map(carta("pergunta"));
+  const doCasal = nossas
+    .filter(
+      (n) =>
+        modo.categorias.includes(n.categoria as never) &&
+        n.carta.nivel <= teto &&
+        n.carta.nivel >= (modo.faixa?.min ?? 1),
+    )
+    .map((n) => n.carta);
+
+  const base = [
+    ...perguntas({
+      categorias: modo.categorias,
+      nivelMinimo: modo.faixa?.min,
+      nivelMaximo: teto,
+    }).map(carta("pergunta")),
+    ...doCasal,
+  ];
 
   if (!modo.misturaDesafios) return escada(novas(base, tamanho), tamanho);
 

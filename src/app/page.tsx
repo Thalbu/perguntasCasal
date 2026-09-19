@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 import { useState } from "react";
 import { Botao } from "@/components/Botao";
 import { BotaoTema } from "@/components/BotaoTema";
@@ -18,7 +19,13 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-8 px-5 py-10">
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end gap-2">
+        <Link
+          href="/nos"
+          className="flex min-h-11 items-center rounded-full bg-white/20 px-4 text-sm text-white ring-1 ring-white/35 backdrop-blur transition hover:bg-white/30"
+        >
+          Nosso espaço
+        </Link>
         <BotaoTema />
       </div>
 

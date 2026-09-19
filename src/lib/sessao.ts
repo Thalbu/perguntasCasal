@@ -62,6 +62,7 @@ function contar(rodadas: Rodada[]): Resultado {
 export function useSessao(
   modo: Modo,
   vistas: Set<string>,
+  nossas: { carta: Carta; categoria: string }[],
   /** chamado no fim da última rodada, ainda dentro do evento de clique */
   aoTerminar?: (resultado: Resultado, cartas: number) => void,
 ): Sessao {
@@ -74,7 +75,7 @@ export function useSessao(
   const comecar = useCallback(
     (nivel?: Nivel) => {
       const tamanho = modo.tamanho ?? PERGUNTAS_POR_SESSAO;
-      const cartas = montarBaralho(modo, nivel, vistas);
+      const cartas = montarBaralho(modo, nivel, vistas, 6, nossas);
       setRodadas(
         cartas.slice(0, tamanho).map((carta, i) => ({ carta, vez: (i % 2) as 0 | 1 })),
       );
@@ -82,7 +83,7 @@ export function useSessao(
       setIndice(0);
       setFase("jogando");
     },
-    [modo, vistas],
+    [modo, vistas, nossas],
   );
 
   const avancar = useCallback(

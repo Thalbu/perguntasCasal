@@ -11,6 +11,7 @@ import { NIVEIS, type Carta, type Modo, type Nivel } from "@/data";
 import { useCasal } from "@/lib/armazenamento";
 import { useFavoritas } from "@/lib/favoritas";
 import { useHistorico } from "@/lib/historico";
+import { comoCarta, useMinhas } from "@/lib/minhas";
 import { useSessao, type Resultado } from "@/lib/sessao";
 import { useTema } from "@/lib/tema";
 import { useVistas } from "@/lib/vistas";
@@ -24,6 +25,8 @@ export function Jogo({ modo }: { modo: Modo }) {
 
   const { registrar } = useHistorico();
   const { vistas, marcar } = useVistas();
+  const { minhas } = useMinhas();
+  const nossas = minhas.map((m) => ({ carta: comoCarta(m), categoria: m.categoria }));
   const { favoritas, alternar } = useFavoritas();
 
   // Set recriado a cada render é barato e evita guardar estado duplicado
@@ -40,7 +43,7 @@ export function Jogo({ modo }: { modo: Modo }) {
     [registrar, modo.id, pontua],
   );
 
-  const sessao = useSessao(modo, jaVistas, aoTerminar);
+  const sessao = useSessao(modo, jaVistas, nossas, aoTerminar);
 
   // A Noite a dois é escura por definição; ao sair, o tema do casal volta.
   const { tema, aplicar } = useTema();
