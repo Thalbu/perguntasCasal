@@ -5,6 +5,8 @@ export type Pergunta = {
   texto: string;
   /** só no modo picante: 1 = leve, 2 = quente, 3 = sem freio */
   nivel?: Nivel;
+  /** quebra-gelo: rápida de responder, serve pra abrir a sessão sem peso */
+  leve?: true;
 };
 
 export type ModoId = "conhecer" | "picante" | "conhece-me";

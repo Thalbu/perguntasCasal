@@ -6,13 +6,19 @@ do aparelho.
 
 ## Modos
 
-| Modo | O que é |
-|---|---|
-| Conhecer Melhor | 60 perguntas de profundidade, revezando a vez |
-| Picante | 45 perguntas em três níveis de ousadia, escolhidos antes de começar |
-| Você Me Conhece? | 40 perguntas sobre o outro, com placar de acertos |
+| Modo | Perguntas | O que é |
+|---|---|---|
+| Conhecer Melhor | 363 | A pessoa, a história dela e a nossa, mais rotina e futuro |
+| Picante | 221 | Três níveis de ousadia, escolhidos antes de começar |
+| Você Me Conhece? | 222 | Adivinhar a resposta do outro, com placar de acertos |
 
-Cada sessão sorteia 12 perguntas sem repetir.
+806 no total. Cada sessão sorteia 12 sem repetir, abrindo com três
+quebra-gelos (`leve: true`) antes de ir fundo — perguntar "qual seu maior
+medo" de cara trava a conversa.
+
+No "Você Me Conhece?" o texto usa o token `{alvo}`, trocado pelo nome de
+quem está sendo adivinhado no momento de renderizar. É o que evita o
+"ele(a)" que deixa toda pergunta com cara de formulário.
 
 ## Rodando
 

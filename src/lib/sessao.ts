@@ -6,6 +6,23 @@ import { embaralhar } from "./embaralhar";
 
 export const PERGUNTAS_POR_SESSAO = 12;
 
+/** Quantos quebra-gelos abrem a sessão antes de o assunto aprofundar. */
+const ABERTURA_LEVE = 3;
+
+/**
+ * Monta a sequência: alguns quebra-gelos primeiro, depois as de fundo.
+ * Sorteadas dentro de cada grupo, nunca repetindo dentro da sessão.
+ */
+function montar(pool: Pergunta[], quantidade: number): Pergunta[] {
+  const leves = embaralhar(pool.filter((p) => p.leve));
+  const fundas = embaralhar(pool.filter((p) => !p.leve));
+
+  const abertura = leves.slice(0, ABERTURA_LEVE);
+  const resto = [...fundas, ...leves.slice(ABERTURA_LEVE)];
+
+  return [...abertura, ...resto].slice(0, quantidade);
+}
+
 export type Fase = "intro" | "jogando" | "fim";
 
 export type Rodada = {
@@ -52,10 +69,7 @@ export function useSessao(
 
   const comecar = useCallback(
     (opcoes?: { nivelMaximo?: number }) => {
-      const sorteadas = embaralhar(banco(opcoes?.nivelMaximo)).slice(
-        0,
-        PERGUNTAS_POR_SESSAO,
-      );
+      const sorteadas = montar(banco(opcoes?.nivelMaximo), PERGUNTAS_POR_SESSAO);
       setRodadas(
         sorteadas.map((pergunta, i) => ({
           pergunta,

@@ -72,7 +72,10 @@ export function Jogo({ modo }: { modo: Modo }) {
         {sessao.fase === "jogando" && sessao.atual && (
           <Rodada
             key={sessao.atual.pergunta.id}
-            texto={sessao.atual.pergunta.texto}
+            texto={sessao.atual.pergunta.texto.replaceAll(
+              "{alvo}",
+              nomes[sessao.atual.vez === 0 ? 1 : 0],
+            )}
             quem={nomes[sessao.atual.vez]}
             sobre={nomes[sessao.atual.vez === 0 ? 1 : 0]}
             modo={modo}
