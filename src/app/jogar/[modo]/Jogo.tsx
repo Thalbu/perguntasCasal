@@ -1,8 +1,10 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { Botao } from "@/components/Botao";
+import { CardPergunta } from "@/components/CardPergunta";
 import { Progresso } from "@/components/Progresso";
 import { NIVEIS } from "@/data/picante";
 import { perguntasDo, type Modo } from "@/data";
@@ -53,16 +55,18 @@ export function Jogo({ modo }: { modo: Modo }) {
         />
       )}
 
-      {sessao.fase === "jogando" && sessao.atual && (
-        <Rodada
-          key={sessao.atual.pergunta.id}
-          texto={sessao.atual.pergunta.texto}
-          quem={nomes[sessao.atual.vez]}
-          sobre={nomes[sessao.atual.vez === 0 ? 1 : 0]}
-          modo={modo}
-          onAvancar={sessao.avancar}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {sessao.fase === "jogando" && sessao.atual && (
+          <Rodada
+            key={sessao.atual.pergunta.id}
+            texto={sessao.atual.pergunta.texto}
+            quem={nomes[sessao.atual.vez]}
+            sobre={nomes[sessao.atual.vez === 0 ? 1 : 0]}
+            modo={modo}
+            onAvancar={sessao.avancar}
+          />
+        )}
+      </AnimatePresence>
 
       {sessao.fase === "fim" && (
         <Fim modo={modo} nomes={nomes} placar={sessao.placar} onDeNovo={sessao.reiniciar} />
@@ -143,31 +147,45 @@ function Rodada({
   modo: Modo;
   onAvancar: (acertou?: boolean) => void;
 }) {
+  const [aberto, setAberto] = useState(false);
+
   return (
-    <div className="flex flex-1 flex-col justify-center gap-6">
-      <p className="text-center text-sm font-medium tracking-wide text-white/90 uppercase">
-        {modo.placar ? `${quem}, o que ${sobre} responderia?` : `Vez de ${quem}`}
+    <motion.div
+      initial={{ opacity: 0, x: 64 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -64 }}
+      transition={{ type: "spring", stiffness: 300, damping: 32 }}
+      className="flex flex-1 flex-col justify-center gap-6"
+    >
+      {/* redundante enquanto o verso do card já anuncia de quem é a vez */}
+      <p className="min-h-5 text-center text-sm font-medium tracking-wide text-white/90 uppercase">
+        {aberto && (modo.placar ? `${quem} chuta por ${sobre}` : `Vez de ${quem}`)}
       </p>
 
-      <div className="rounded-[var(--radius-card)] bg-creme p-8 shadow-[var(--shadow-card)]">
-        <p className="font-display text-3xl leading-snug text-vinho">{texto}</p>
-      </div>
+      <CardPergunta
+        texto={texto}
+        chamada={quem}
+        dica={modo.placar ? `o que ${sobre} responderia?` : "sua vez"}
+        aberto={aberto}
+        onAbrir={() => setAberto(true)}
+      />
 
-      {modo.placar ? (
-        <div className="flex gap-3">
-          <Botao variante="fantasma" className="flex-1" onClick={() => onAvancar(false)}>
-            Errou
+      {aberto &&
+        (modo.placar ? (
+          <div className="flex gap-3">
+            <Botao variante="fantasma" className="flex-1" onClick={() => onAvancar(false)}>
+              Errou
+            </Botao>
+            <Botao className="flex-1" onClick={() => onAvancar(true)}>
+              Acertou
+            </Botao>
+          </div>
+        ) : (
+          <Botao className="self-center" onClick={() => onAvancar()}>
+            Próxima
           </Botao>
-          <Botao className="flex-1" onClick={() => onAvancar(true)}>
-            Acertou
-          </Botao>
-        </div>
-      ) : (
-        <Botao className="self-center" onClick={() => onAvancar()}>
-          Próxima
-        </Botao>
-      )}
-    </div>
+        ))}
+    </motion.div>
   );
 }
 

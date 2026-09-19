@@ -58,11 +58,13 @@ export default function Home() {
         >
           <CampoNome
             rotulo="Quem começa"
+            exemplo="Tainan"
             valor={rascunho.a}
             onChange={(a) => setRascunho((r) => ({ ...r, a }))}
           />
           <CampoNome
             rotulo="E o amor"
+            exemplo="Dâmaris"
             valor={rascunho.b}
             onChange={(b) => setRascunho((r) => ({ ...r, b }))}
           />
