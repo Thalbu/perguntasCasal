@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { RegistraSW } from "@/components/RegistraSW";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -42,7 +43,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
       </head>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <RegistraSW />
+      </body>
     </html>
   );
 }
