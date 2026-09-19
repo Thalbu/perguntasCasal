@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { Botao } from "@/components/Botao";
 import { CardPergunta } from "@/components/CardPergunta";
+import { Confete } from "@/components/Confete";
 import { Progresso } from "@/components/Progresso";
 import { NIVEIS } from "@/data/picante";
 import { perguntasDo, type Modo } from "@/data";
@@ -69,7 +70,13 @@ export function Jogo({ modo }: { modo: Modo }) {
       </AnimatePresence>
 
       {sessao.fase === "fim" && (
-        <Fim modo={modo} nomes={nomes} placar={sessao.placar} onDeNovo={sessao.reiniciar} />
+        <Fim
+          modo={modo}
+          nomes={nomes}
+          placar={sessao.placar}
+          total={sessao.total}
+          onDeNovo={sessao.reiniciar}
+        />
       )}
     </main>
   );
@@ -148,6 +155,13 @@ function Rodada({
   onAvancar: (acertou?: boolean) => void;
 }) {
   const [aberto, setAberto] = useState(false);
+  const [comemorando, setComemorando] = useState(false);
+
+  // deixa o confete respirar antes de trocar a pergunta
+  const acertou = () => {
+    setComemorando(true);
+    setTimeout(() => onAvancar(true), 700);
+  };
 
   return (
     <motion.div
@@ -162,21 +176,29 @@ function Rodada({
         {aberto && (modo.placar ? `${quem} chuta por ${sobre}` : `Vez de ${quem}`)}
       </p>
 
-      <CardPergunta
-        texto={texto}
-        chamada={quem}
-        dica={modo.placar ? `o que ${sobre} responderia?` : "sua vez"}
-        aberto={aberto}
-        onAbrir={() => setAberto(true)}
-      />
+      <div className="relative">
+        {comemorando && <Confete semente={texto} />}
+        <CardPergunta
+          texto={texto}
+          chamada={quem}
+          dica={modo.placar ? `o que ${sobre} responderia?` : "sua vez"}
+          aberto={aberto}
+          onAbrir={() => setAberto(true)}
+        />
+      </div>
 
       {aberto &&
         (modo.placar ? (
           <div className="flex gap-3">
-            <Botao variante="fantasma" className="flex-1" onClick={() => onAvancar(false)}>
+            <Botao
+              variante="fantasma"
+              className="flex-1"
+              disabled={comemorando}
+              onClick={() => onAvancar(false)}
+            >
               Errou
             </Botao>
-            <Botao className="flex-1" onClick={() => onAvancar(true)}>
+            <Botao className="flex-1" disabled={comemorando} onClick={acertou}>
               Acertou
             </Botao>
           </div>
@@ -193,32 +215,49 @@ function Fim({
   modo,
   nomes,
   placar,
+  total,
   onDeNovo,
 }: {
   modo: Modo;
   nomes: [string, string];
   placar: [number, number];
+  total: number;
   onDeNovo: () => void;
 }) {
+  const [a, b] = placar;
+  const veredito = !modo.placar
+    ? "Doze perguntas a menos entre vocês."
+    : a === b
+      ? `Empate: ${a} a ${b}. Vocês se conhecem igual.`
+      : `${a > b ? nomes[0] : nomes[1]} conhece melhor.`;
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
       <h2 className="font-display text-4xl text-white drop-shadow-lg">Acabou por hoje</h2>
+      <p className="-mt-3 text-white/85">{veredito}</p>
 
       {modo.placar && (
         <div className="flex w-full gap-3">
           {nomes.map((nome, i) => (
             <div
               key={nome + i}
-              className="flex-1 rounded-[var(--radius-card)] bg-creme/95 p-5 shadow-[var(--shadow-card)]"
+              className={`flex-1 rounded-[var(--radius-card)] p-5 shadow-[var(--shadow-card)] ${
+                placar[i] === Math.max(a, b) && a !== b
+                  ? "bg-creme ring-3 ring-white"
+                  : "bg-creme/85"
+              }`}
             >
               <p className="truncate text-sm text-carvao/70">{nome}</p>
-              <p className="font-display text-4xl text-vinho">{placar[i]}</p>
+              <p className="font-display text-4xl text-vinho">
+                {placar[i]}
+                <span className="text-lg text-carvao/45">/{Math.ceil(total / 2)}</span>
+              </p>
             </div>
           ))}
         </div>
       )}
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col items-center gap-3">
         <Botao onClick={onDeNovo}>Jogar de novo</Botao>
         <Link href="/" className="text-white/85 underline underline-offset-4">
           Escolher outro modo
