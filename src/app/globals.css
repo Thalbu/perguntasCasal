@@ -30,6 +30,13 @@ body {
   height: 100%;
 }
 
+/* viewportFit: "cover" leva a página até as bordas; isso devolve o respiro
+   do notch e da barra de gestos */
+main {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 body {
   color: var(--carvao);
   font-family: var(--font-inter), system-ui, sans-serif;

@@ -23,7 +23,11 @@ export function CardPergunta({
     <div className="[perspective:1400px]">
       <motion.button
         type="button"
-        onClick={onAbrir}
+        onClick={() => {
+          // vibração curta: o celular confirma a virada sem barulho
+          navigator.vibrate?.(12);
+          onAbrir();
+        }}
         disabled={aberto}
         aria-live="polite"
         aria-label={aberto ? texto : `${chamada}. ${dica}`}
