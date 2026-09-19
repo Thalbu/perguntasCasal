@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Botao } from "@/components/Botao";
 import { CardPergunta } from "@/components/CardPergunta";
 import { Confete } from "@/components/Confete";
@@ -12,6 +12,7 @@ import { useCasal } from "@/lib/armazenamento";
 import { useFavoritas } from "@/lib/favoritas";
 import { useHistorico } from "@/lib/historico";
 import { useSessao, type Resultado } from "@/lib/sessao";
+import { useTema } from "@/lib/tema";
 import { useVistas } from "@/lib/vistas";
 
 export function Jogo({ modo }: { modo: Modo }) {
@@ -40,6 +41,14 @@ export function Jogo({ modo }: { modo: Modo }) {
   );
 
   const sessao = useSessao(modo, jaVistas, aoTerminar);
+
+  // A Noite a dois é escura por definição; ao sair, o tema do casal volta.
+  const { tema, aplicar } = useTema();
+  useEffect(() => {
+    if (!modo.cinematografico) return;
+    aplicar("escuro");
+    return () => aplicar(tema);
+  }, [modo.cinematografico, aplicar, tema]);
   const nomes: [string, string] = [casal.a || "Você", casal.b || "Amor"];
 
   return (

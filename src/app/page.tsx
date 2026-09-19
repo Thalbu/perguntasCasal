@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { useState } from "react";
 import { Botao } from "@/components/Botao";
+import { BotaoTema } from "@/components/BotaoTema";
 import { CampoNome } from "@/components/CampoNome";
 import { CardModo } from "@/components/CardModo";
 import { Favoritas } from "@/components/Favoritas";
@@ -17,6 +18,10 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-8 px-5 py-10">
+      <div className="flex justify-end">
+        <BotaoTema />
+      </div>
+
       <header className="text-center">
         <motion.h1
           initial={{ opacity: 0, y: -12 }}

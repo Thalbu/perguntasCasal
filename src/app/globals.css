@@ -1,28 +1,56 @@
 @import "tailwindcss";
 
+/*
+ * Tema claro: o gradiente coral de dia.
+ * As variáveis de papel (fundo/tinta/card) são o que os componentes usam —
+ * trocar de tema redefine só elas.
+ */
 :root {
-  /* paleta romântico moderno */
   --coral: #ff6b6b;
   --rosa: #ff8fa3;
   --ambar: #ffc48c;
   --vinho: #7a2233;
   --creme: #fff8f3;
   --carvao: #2b1b1f;
+
+  --fundo: linear-gradient(135deg, var(--coral) 0%, var(--rosa) 45%, var(--ambar) 100%);
+  --card: var(--creme);
+  --card-tinta: var(--vinho);
+  --acento: var(--vinho);
+  --acento-tinta: var(--creme);
+  --sobre-fundo: #ffffff;
+  --sombra-card: 0 24px 60px -12px rgb(122 34 51 / 0.35);
+}
+
+/*
+ * Tema escuro: o app vai ser usado na cama, com a luz apagada. O gradiente
+ * coral a meia-noite é agressivo — aqui ele vira ameixa profunda.
+ */
+:root[data-tema="escuro"] {
+  --fundo: linear-gradient(160deg, #2a0d18 0%, #451226 50%, #1b0a12 100%);
+  --card: #fdf3ec;
+  --card-tinta: #5d1727;
+  --acento: #ffc48c;
+  --acento-tinta: #3a0f1c;
+  --sobre-fundo: #ffe9dc;
+  --sombra-card: 0 24px 60px -12px rgb(0 0 0 / 0.6);
 }
 
 @theme inline {
   --color-coral: var(--coral);
   --color-rosa: var(--rosa);
   --color-ambar: var(--ambar);
-  --color-vinho: var(--vinho);
-  --color-creme: var(--creme);
+  --color-vinho: var(--card-tinta);
+  --color-creme: var(--card);
   --color-carvao: var(--carvao);
+  --color-acento: var(--acento);
+  --color-acento-tinta: var(--acento-tinta);
 
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-inter);
 
   --radius-card: 28px;
-  --shadow-card: 0 24px 60px -12px rgb(122 34 51 / 0.35);
+  --shadow-card: var(--sombra-card);
 }
 
 html,
@@ -30,7 +58,7 @@ body {
   height: 100%;
 }
 
-/* viewportFit: "cover" leva a página até as bordas; isso devolve o respiro
+/* viewportFit "cover" leva a página até as bordas; isso devolve o respiro
    do notch e da barra de gestos */
 main {
   padding-top: env(safe-area-inset-top);
@@ -40,15 +68,10 @@ main {
 body {
   color: var(--carvao);
   font-family: var(--font-inter), system-ui, sans-serif;
-  /* gradiente quente que respira devagar */
-  background: linear-gradient(
-    135deg,
-    var(--coral) 0%,
-    var(--rosa) 45%,
-    var(--ambar) 100%
-  );
+  background: var(--fundo);
   background-size: 200% 200%;
   animation: respira 18s ease-in-out infinite;
+  transition: background-color 0.4s ease;
 }
 
 @keyframes respira {

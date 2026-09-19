@@ -46,6 +46,8 @@ export type Modo = {
   roteiro?: Trecho[];
   /** Uma frase de fechamento, mostrada na tela final. */
   despedida?: string;
+  /** Força o tema escuro enquanto a partida dura. */
+  cinematografico?: true;
 };
 
 const CONVERSA: CategoriaId[] = [
@@ -150,6 +152,7 @@ export const MODOS: Modo[] = [
       5: { rotulo: "Sem filtro", descricao: "Vai até o fim", emoji: "🌶️" },
     },
     despedida: "Antes de dormir: o que você mais gosta em nós dois?",
+    cinematografico: true,
     roteiro: [
       { fonte: "pergunta", quantidade: 3, nivel: 1, categorias: CONVERSA },
       { fonte: "pergunta", quantidade: 3, nivel: 1, categorias: ["divertidas"] },
