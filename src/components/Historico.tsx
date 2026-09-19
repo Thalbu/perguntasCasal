@@ -15,7 +15,7 @@ export function Historico() {
         <h2 className="text-sm font-semibold text-white">Últimas partidas</h2>
         <button
           onClick={limpar}
-          className="text-xs text-white/70 underline underline-offset-2 hover:text-white"
+          className="inline-flex min-h-11 items-center px-2 text-xs text-white/70 underline underline-offset-2 hover:text-white"
         >
           limpar
         </button>

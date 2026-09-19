@@ -11,10 +11,11 @@ export function CardModo({ modo, indice }: { modo: Modo; indice: number }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.08 * indice, type: "spring", stiffness: 260, damping: 24 }}
       whileTap={{ scale: 0.97 }}
+      className="h-full"
     >
       <Link
         href={`/jogar/${modo.id}`}
-        className="flex items-center gap-4 rounded-[var(--radius-card)] bg-creme/95 p-5 text-left shadow-[var(--shadow-card)] transition hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white"
+        className="flex h-full items-center gap-4 rounded-[var(--radius-card)] bg-creme/95 p-5 text-left shadow-[var(--shadow-card)] transition hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-white"
       >
         <span aria-hidden className="text-4xl">
           {modo.emoji}

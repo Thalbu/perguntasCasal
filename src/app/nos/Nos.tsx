@@ -17,16 +17,16 @@ export function Nos() {
   const dias = diasJuntos(perfil.desdeQuando);
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-6 sm:py-8 lg:max-w-3xl">
       <Link
         href="/"
-        className="text-sm font-medium text-white/85 underline-offset-4 hover:underline"
+        className="-ml-2 inline-flex min-h-11 items-center px-2 text-sm font-medium text-white/85 underline-offset-4 hover:underline"
       >
         ← Voltar
       </Link>
 
       <header className="text-center">
-        <h1 className="font-display text-4xl text-white drop-shadow-lg">
+        <h1 className="titulo-tela font-display text-white drop-shadow-lg">
           {perfil.apelidoDoCasal || `${casal.a || "Você"} & ${casal.b || "Amor"}`}
         </h1>
         {dias !== null && (
@@ -163,7 +163,7 @@ function NossasPerguntas() {
               <button
                 onClick={() => remover(m.id)}
                 aria-label={`Remover: ${m.texto}`}
-                className="shrink-0 px-1 text-white/60 hover:text-white"
+                className="-my-2 -mr-1 inline-flex min-h-11 w-9 shrink-0 items-center justify-center text-white/60 hover:text-white"
               >
                 ×
               </button>

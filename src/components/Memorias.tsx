@@ -46,7 +46,7 @@ export function Memorias() {
                   <button
                     onClick={() => remover(m.id)}
                     aria-label={`Apagar memória: ${m.pergunta}`}
-                    className="ml-auto px-1 text-white/50 hover:text-white"
+                    className="-my-2 -mr-1 ml-auto inline-flex min-h-11 w-9 items-center justify-center text-white/50 hover:text-white"
                   >
                     ×
                   </button>

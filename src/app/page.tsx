@@ -21,7 +21,7 @@ export default function Home() {
   const nomeado = Boolean(casal.a && casal.b);
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-8 px-5 py-10">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-6 px-5 py-6 sm:gap-8 sm:py-10 lg:max-w-4xl">
       <div className="flex items-center justify-end gap-2">
         <Link
           href="/nos"
@@ -36,7 +36,7 @@ export default function Home() {
         <motion.h1
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="font-display text-5xl leading-tight text-white drop-shadow-[0_4px_16px_rgba(122,34,51,0.45)]"
+          className="titulo-tela font-display leading-tight text-white drop-shadow-[0_4px_16px_rgba(122,34,51,0.45)]"
         >
           Nós Dois
         </motion.h1>
@@ -51,15 +51,17 @@ export default function Home() {
         <>
           <PerguntaDoDia />
 
-          <div className="flex flex-col gap-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {MODOS.map((modo, i) => (
               <CardModo key={modo.id} modo={modo} indice={i} />
             ))}
           </div>
-          <Estatisticas />
-          <Memorias />
-          <Favoritas />
-          <Historico />
+          <div className="grid gap-3 lg:grid-cols-2">
+            <Estatisticas />
+            <Memorias />
+            <Favoritas />
+            <Historico />
+          </div>
           <Botao
             variante="fantasma"
             className="self-center"

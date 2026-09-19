@@ -56,11 +56,11 @@ export function Jogo({ modo }: { modo: Modo }) {
   const nomes: [string, string] = [casal.a || "Você", casal.b || "Amor"];
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 px-5 py-8">
+    <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-4 px-5 py-5 sm:gap-6 sm:py-8 lg:max-w-xl baixo:gap-2 baixo:py-3">
       <div className="flex items-center gap-4">
         <Link
           href="/"
-          className="text-sm font-medium text-white/85 underline-offset-4 hover:underline"
+          className="-ml-2 inline-flex min-h-11 items-center px-2 text-sm font-medium text-white/85 underline-offset-4 hover:underline"
         >
           ← Voltar
         </Link>
@@ -156,12 +156,12 @@ function Intro({
     : [];
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-      <span aria-hidden className="text-6xl">
+    <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center sm:gap-6 baixo:gap-2">
+      <span aria-hidden className="text-5xl sm:text-6xl baixo:hidden">
         {modo.emoji}
       </span>
       <div>
-        <h1 className="font-display text-4xl text-white drop-shadow-lg">{modo.nome}</h1>
+        <h1 className="titulo-tela font-display text-white drop-shadow-lg">{modo.nome}</h1>
         <p className="mt-2 text-white/85">{modo.tagline}</p>
       </div>
 
@@ -253,9 +253,9 @@ function Rodada({
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -64 }}
       transition={{ type: "spring", stiffness: 300, damping: 32 }}
-      className="flex flex-1 flex-col justify-center gap-6"
+      className="flex flex-1 flex-col justify-center gap-4 sm:gap-6 baixo:gap-2"
     >
-      <p className="min-h-5 text-center text-sm font-medium tracking-wide text-white/90 uppercase">
+      <p className="min-h-5 text-center text-sm font-medium tracking-wide text-white/90 uppercase baixo:min-h-0">
         {aberto && etiqueta}
       </p>
 
@@ -378,8 +378,8 @@ function Fim({
   const mostraPlacar = pontua || aponta;
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-      <h2 className="font-display text-4xl text-white drop-shadow-lg">Acabou por hoje</h2>
+    <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center sm:gap-6 baixo:gap-2">
+      <h2 className="titulo-tela font-display text-white drop-shadow-lg">Acabou por hoje</h2>
       <p className="-mt-3 text-white/85">{veredito}</p>
 
       {mostraPlacar && (
@@ -407,7 +407,7 @@ function Fim({
       )}
 
       {modo.despedida && (
-        <p className="rounded-[var(--radius-card)] bg-creme/95 p-6 font-display text-2xl text-vinho shadow-[var(--shadow-card)]">
+        <p className="texto-carta rounded-[var(--radius-card)] bg-creme/95 p-6 font-display text-vinho shadow-[var(--shadow-card)]">
           {modo.despedida}
         </p>
       )}

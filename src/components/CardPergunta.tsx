@@ -37,16 +37,16 @@ export function CardPergunta({
         animate={{ rotateY: aberto ? 0 : 180 }}
         initial={false}
         transition={{ type: "spring", stiffness: 140, damping: 18 }}
-        className="grid min-h-60 w-full [transform-style:preserve-3d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+        className="carta grid w-full [transform-style:preserve-3d] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
         {/* frente: a pergunta */}
         <span
-          className={`col-start-1 row-start-1 flex items-center rounded-[var(--radius-card)] p-8 shadow-[var(--shadow-card)] [backface-visibility:hidden] ${
+          className={`col-start-1 row-start-1 flex items-center rounded-[var(--radius-card)] p-6 shadow-[var(--shadow-card)] sm:p-8 [backface-visibility:hidden] ${
             variante === "desafio" ? "bg-vinho" : "bg-creme"
           }`}
         >
           <span
-            className={`font-display text-3xl leading-snug text-left ${
+            className={`texto-carta font-display text-left ${
               variante === "desafio" ? "text-creme" : "text-vinho"
             }`}
           >
@@ -55,8 +55,8 @@ export function CardPergunta({
         </span>
 
         {/* verso: o convite pra virar */}
-        <span className="col-start-1 row-start-1 flex flex-col items-center justify-center gap-2 rounded-[var(--radius-card)] bg-vinho p-8 shadow-[var(--shadow-card)] [backface-visibility:hidden] [transform:rotateY(180deg)]">
-          <span className="font-display text-3xl text-creme">{chamada}</span>
+        <span className="col-start-1 row-start-1 flex flex-col items-center justify-center gap-2 rounded-[var(--radius-card)] bg-vinho p-6 text-center shadow-[var(--shadow-card)] sm:p-8 [backface-visibility:hidden] [transform:rotateY(180deg)]">
+          <span className="texto-carta font-display text-creme">{chamada}</span>
           <span className="text-sm text-creme/70">{dica}</span>
         </span>
       </motion.button>

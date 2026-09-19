@@ -22,7 +22,7 @@ export function Favoritas() {
         {aberto && (
           <button
             onClick={limpar}
-            className="text-xs text-white/70 underline underline-offset-2 hover:text-white"
+            className="inline-flex min-h-11 items-center px-2 text-xs text-white/70 underline underline-offset-2 hover:text-white"
           >
             limpar
           </button>
@@ -37,7 +37,7 @@ export function Favoritas() {
               <button
                 onClick={() => alternar(f)}
                 aria-label={`Remover: ${f.texto}`}
-                className="shrink-0 px-1 text-white/60 hover:text-white"
+                className="-my-2 -mr-1 inline-flex min-h-11 w-9 shrink-0 items-center justify-center text-white/60 hover:text-white"
               >
                 ×
               </button>
