@@ -6,21 +6,31 @@ import { embaralhar } from "./embaralhar";
 
 export const PERGUNTAS_POR_SESSAO = 12;
 
-/** Quantos quebra-gelos abrem a sessão antes de o assunto aprofundar. */
-const ABERTURA_LEVE = 3;
+/** Quantas perguntas do nível mais baixo abrem a sessão. */
+const ABERTURA = 3;
 
 /**
- * Monta a sequência: alguns quebra-gelos primeiro, depois as de fundo.
- * Sorteadas dentro de cada grupo, nunca repetindo dentro da sessão.
+ * Monta a sequência: começa pelo nível mais baixo disponível e sobe.
+ * Sorteadas dentro de cada nível, nunca repetindo dentro da sessão.
+ *
+ * A subida importa: abrir uma noite com "qual seu medo sobre o nosso
+ * futuro" trava a conversa antes dela começar.
  */
 function montar(pool: Pergunta[], quantidade: number): Pergunta[] {
-  const leves = embaralhar(pool.filter((p) => p.leve));
-  const fundas = embaralhar(pool.filter((p) => !p.leve));
+  const porNivel = new Map<number, Pergunta[]>();
+  for (const p of pool) {
+    porNivel.set(p.nivel, [...(porNivel.get(p.nivel) ?? []), p]);
+  }
 
-  const abertura = leves.slice(0, ABERTURA_LEVE);
-  const resto = [...fundas, ...leves.slice(ABERTURA_LEVE)];
+  const niveis = [...porNivel.keys()].sort((a, b) => a - b);
+  const escada = niveis.flatMap((n) => embaralhar(porNivel.get(n)!));
+  const maisBaixo = porNivel.get(niveis[0]) ?? [];
 
-  return [...abertura, ...resto].slice(0, quantidade);
+  if (maisBaixo.length === 0) return escada.slice(0, quantidade);
+
+  const abertura = embaralhar(maisBaixo).slice(0, ABERTURA);
+  const ids = new Set(abertura.map((p) => p.id));
+  return [...abertura, ...escada.filter((p) => !ids.has(p.id))].slice(0, quantidade);
 }
 
 export type Fase = "intro" | "jogando" | "fim";

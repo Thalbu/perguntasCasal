@@ -16,6 +16,19 @@ const LIMITE = 20;
 
 const VAZIO: Partida[] = [];
 
+/**
+ * Os ids dos modos mudaram quando o banco virou categorias. Quem já jogou
+ * tem partidas gravadas com os nomes antigos; sem isto o histórico delas
+ * apareceria como texto cru.
+ */
+const RENOMEADOS: Record<string, ModoId> = {
+  conhecer: "nos-dois",
+  "conhece-me": "adivinhar",
+};
+
+const migrar = (p: Partida): Partida =>
+  p.modo in RENOMEADOS ? { ...p, modo: RENOMEADOS[p.modo] } : p;
+
 export function useHistorico() {
   const { valor, salvar, atualizar, pronto } = usePersistido<Partida[]>(
     "historico",
@@ -31,5 +44,5 @@ export function useHistorico() {
 
   const limpar = useCallback(() => salvar([]), [salvar]);
 
-  return { partidas: valor, registrar, limpar, pronto };
+  return { partidas: valor.map(migrar), registrar, limpar, pronto };
 }

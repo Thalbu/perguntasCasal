@@ -1,6 +1,6 @@
 "use client";
 
-import { MODOS_POR_ID } from "@/data";
+import { MODO_POR_ID } from "@/data";
 import { useHistorico } from "@/lib/historico";
 
 const data = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" });
@@ -24,8 +24,8 @@ export function Historico() {
       <ul className="flex flex-col gap-1.5">
         {partidas.slice(0, 5).map((p) => (
           <li key={p.quando} className="flex items-center gap-2 text-sm text-white/90">
-            <span aria-hidden>{MODOS_POR_ID[p.modo]?.emoji ?? "•"}</span>
-            <span className="truncate">{MODOS_POR_ID[p.modo]?.nome ?? p.modo}</span>
+            <span aria-hidden>{MODO_POR_ID[p.modo]?.emoji ?? "•"}</span>
+            <span className="truncate">{MODO_POR_ID[p.modo]?.nome ?? p.modo}</span>
             {p.placar && (
               <span className="tabular-nums text-white/70">
                 {p.placar[0]}–{p.placar[1]}

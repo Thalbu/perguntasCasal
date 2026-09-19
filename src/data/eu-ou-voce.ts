@@ -1,0 +1,101 @@
+import type { Nivel } from "./tipos";
+
+/**
+ * Formato próprio: em vez de responder, cada um aponta pra uma das duas
+ * pessoas. Divertido quando os dois apontam ao mesmo tempo e discordam.
+ */
+export type Aposta = { id: string; texto: string; nivel: Nivel };
+
+const porNivel: Partial<Record<Nivel, string[]>> = {
+  1: [
+    "Quem é mais ciumento?",
+    "Quem é mais teimoso?",
+    "Quem demora mais pra ficar pronto?",
+    "Quem é mais organizado?",
+    "Quem come mais rápido?",
+    "Quem dorme primeiro?",
+    "Quem ronca?",
+    "Quem esquece mais as coisas?",
+    "Quem perde mais a paciência no trânsito?",
+    "Quem gasta mais dinheiro à toa?",
+    "Quem é mais dramático?",
+    "Quem ri das próprias piadas?",
+    "Quem canta pior?",
+    "Quem dança melhor?",
+    "Quem é mais preguiçoso no fim de semana?",
+    "Quem fala mais alto?",
+    "Quem demora mais no banho?",
+    "Quem usa mais o celular?",
+    "Quem é mais fresco com comida?",
+    "Quem acorda de melhor humor?",
+    "Quem chora mais em filme?",
+    "Quem é mais medroso?",
+    "Quem tem mais paciência com criança?",
+    "Quem faz mais bagunça na cozinha?",
+    "Quem some com o controle remoto?",
+    "Quem é mais competitivo num jogo?",
+    "Quem pede desculpa primeiro?",
+    "Quem guarda mais rancor?",
+    "Quem toma mais decisão por impulso?",
+    "Quem é mais gastador em viagem?",
+    "Quem dirige melhor?",
+    "Quem se perde mais fácil?",
+    "Quem é mais vaidoso?",
+    "Quem tira mais foto?",
+    "Quem fala mais dormindo?",
+    "Quem tem o pior gosto musical?",
+    "Quem é mais grudento?",
+    "Quem some no meio de uma festa?",
+    "Quem reclama mais do frio?",
+    "Quem come a última fatia sem perguntar?",
+  ],
+  2: [
+    "Quem ama mais o outro? Respondam honestamente.",
+    "Quem cede mais nas discussões?",
+    "Quem é mais carinhoso no dia a dia?",
+    "Quem demonstra amor com mais facilidade?",
+    "Quem se esforça mais pra agradar?",
+    "Quem percebe primeiro quando o outro está mal?",
+    "Quem é mais paciente com o outro?",
+    "Quem pensa mais no futuro da gente?",
+    "Quem tem mais medo de perder o outro?",
+    "Quem é mais dependente emocionalmente?",
+    "Quem dá mais espaço?",
+    "Quem pede mais atenção?",
+    "Quem seria mais perdido sem o outro?",
+    "Quem se abre mais numa conversa difícil?",
+    "Quem esconde mais o que está sentindo?",
+    "Quem é o mais otimista da relação?",
+    "Quem toma as decisões importantes?",
+    "Quem é o mais responsável dos dois?",
+    "Quem faz o outro rir mais?",
+    "Quem se arrepende mais rápido depois de brigar?",
+    "Quem faria mais sacrifício pelo outro?",
+    "Quem lembra mais das datas?",
+    "Quem planeja as surpresas?",
+    "Quem é mais romântico de verdade?",
+    "Quem seria o melhor pai ou mãe?",
+  ],
+  4: [
+    "Quem toma mais iniciativa?",
+    "Quem é mais safado dos dois?",
+    "Quem provoca mais?",
+    "Quem tem mais vergonha?",
+    "Quem pensa nisso mais vezes por dia?",
+    "Quem seria mais ousado num lugar diferente?",
+    "Quem manda mais mensagem provocante?",
+    "Quem se soltou mais desde que a gente começou?",
+    "Quem tem mais dificuldade de pedir o que quer?",
+    "Quem topa mais coisa nova?",
+  ],
+};
+
+export const apostas: Aposta[] = (
+  Object.entries(porNivel) as [string, string[]][]
+).flatMap(([nivel, textos]) =>
+  textos.map((texto, i) => ({
+    id: `eu${nivel}-${i + 1}`,
+    texto,
+    nivel: Number(nivel) as Nivel,
+  })),
+);
