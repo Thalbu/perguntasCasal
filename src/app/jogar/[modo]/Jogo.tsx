@@ -7,6 +7,7 @@ import { Botao } from "@/components/Botao";
 import { CardPergunta } from "@/components/CardPergunta";
 import { Confete } from "@/components/Confete";
 import { Progresso } from "@/components/Progresso";
+import { Secreto } from "./Secreto";
 import { NIVEIS, type Carta, type Modo, type Nivel } from "@/data";
 import { useCasal } from "@/lib/armazenamento";
 import { useFavoritas } from "@/lib/favoritas";
@@ -85,7 +86,19 @@ export function Jogo({ modo }: { modo: Modo }) {
       )}
 
       <AnimatePresence mode="wait">
-        {sessao.fase === "jogando" && sessao.atual && (
+        {sessao.fase === "jogando" && sessao.atual && modo.mecanica === "secreto" && (
+          <Secreto
+            key={sessao.atual.carta.id}
+            pergunta={sessao.atual.carta.texto.replaceAll("{alvo}", nomes[1])}
+            nomes={nomes}
+            onProxima={() => {
+              marcar([sessao.atual!.carta.id]);
+              sessao.avancar();
+            }}
+          />
+        )}
+
+        {sessao.fase === "jogando" && sessao.atual && modo.mecanica !== "secreto" && (
           <Rodada
             key={sessao.atual.carta.id}
             carta={sessao.atual.carta}

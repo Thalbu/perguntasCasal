@@ -9,8 +9,9 @@ import type { CategoriaId, Nivel } from "./tipos";
  * - adivinhar: chuta a resposta do outro, com placar
  * - escolher: os dois apontam pra uma das duas pessoas
  * - roteiro: sequência fixa montada pelo app
+ * - secreto: cada um escreve sem ver o do outro, e revela depois
  */
-export type Mecanica = "revezar" | "adivinhar" | "escolher" | "roteiro";
+export type Mecanica = "revezar" | "adivinhar" | "escolher" | "roteiro" | "secreto";
 
 export type ModoId =
   | "nos-dois"
@@ -20,7 +21,8 @@ export type ModoId =
   | "eu-ou-voce"
   | "verdade-ou-desafio"
   | "batalha"
-  | "noite";
+  | "noite"
+  | "secreto";
 
 export type Modo = {
   id: ModoId;
@@ -137,6 +139,16 @@ export const MODOS: Modo[] = [
     mecanica: "adivinhar",
     categorias: ["adivinhar"],
     tamanho: 20,
+  },
+  {
+    id: "secreto",
+    nome: "Respostas secretas",
+    tagline: "Cada um escreve escondido, depois vocês revelam juntos",
+    emoji: "🤫",
+    mecanica: "secreto",
+    categorias: CONVERSA,
+    niveis: { min: 1, max: 3, padrao: 2 },
+    tamanho: 6,
   },
   {
     id: "noite",

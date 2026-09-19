@@ -9,6 +9,7 @@ import { CampoNome } from "@/components/CampoNome";
 import { CardModo } from "@/components/CardModo";
 import { Favoritas } from "@/components/Favoritas";
 import { Historico } from "@/components/Historico";
+import { Memorias } from "@/components/Memorias";
 import { MODOS } from "@/data";
 import { useCasal } from "@/lib/armazenamento";
 
@@ -51,6 +52,7 @@ export default function Home() {
               <CardModo key={modo.id} modo={modo} indice={i} />
             ))}
           </div>
+          <Memorias />
           <Favoritas />
           <Historico />
           <Botao
