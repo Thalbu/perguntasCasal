@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useSyncExternalStore } from "react";
+import { useCallback, useRef, useSyncExternalStore } from "react";
 
 const ouvintes = new Set<() => void>();
 
@@ -30,6 +30,9 @@ function ler(chave: string) {
  * home pisca o formulário de nomes antes de saber que já existem nomes.
  */
 export function usePersistido<T>(chave: string, inicial: T) {
+  // o inicial costuma ser um literal novo a cada render; a ref o estabiliza
+  const inicialRef = useRef(inicial);
+
   // undefined = ainda não hidratou (render do servidor). null = hidratou e
   // não há nada guardado. Os dois casos precisam ser distinguíveis.
   const cru = useSyncExternalStore<string | null | undefined>(
@@ -50,16 +53,39 @@ export function usePersistido<T>(chave: string, inicial: T) {
     [chave],
   );
 
-  let valor = inicial;
-  if (cru) {
+  const decodificar = (bruto: string | null | undefined): T => {
+    if (!bruto) return inicial;
     try {
-      valor = JSON.parse(cru) as T;
+      return JSON.parse(bruto) as T;
     } catch {
       // JSON corrompido: cai no inicial
+      return inicial;
     }
-  }
+  };
 
-  return { valor, salvar, pronto: cru !== undefined };
+  const valor = decodificar(cru);
+  /**
+   * Atualiza a partir do que está gravado agora, não do valor capturado no
+   * render. Sem isso, um callback memoizado gravaria por cima de escritas
+   * feitas depois que ele foi criado.
+   */
+  const atualizar = useCallback(
+    (fn: (atual: T) => T) => {
+      const bruto = ler(chave);
+      let base = inicialRef.current;
+      if (bruto) {
+        try {
+          base = JSON.parse(bruto) as T;
+        } catch {
+          // JSON corrompido: parte do inicial
+        }
+      }
+      salvar(fn(base));
+    },
+    [chave, salvar],
+  );
+
+  return { valor, salvar, atualizar, pronto: cru !== undefined };
 }
 
 export type Casal = { a: string; b: string };

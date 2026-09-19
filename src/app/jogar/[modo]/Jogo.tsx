@@ -10,6 +10,7 @@ import { Progresso } from "@/components/Progresso";
 import { NIVEIS } from "@/data/picante";
 import { perguntasDo, type Modo } from "@/data";
 import { useCasal } from "@/lib/armazenamento";
+import { useHistorico } from "@/lib/historico";
 import { PERGUNTAS_POR_SESSAO, useSessao } from "@/lib/sessao";
 
 export function Jogo({ modo }: { modo: Modo }) {
@@ -20,7 +21,18 @@ export function Jogo({ modo }: { modo: Modo }) {
     (nivelMaximo?: number) => perguntasDo(modo.id, nivelMaximo),
     [modo.id],
   );
-  const sessao = useSessao(banco);
+  const { registrar } = useHistorico();
+  const aoTerminar = useCallback(
+    (placar: [number, number], perguntas: number) =>
+      registrar({
+        quando: new Date().toISOString(),
+        modo: modo.id,
+        perguntas,
+        placar: modo.placar ? placar : undefined,
+      }),
+    [registrar, modo.id, modo.placar],
+  );
+  const sessao = useSessao(banco, aoTerminar);
 
   const nomes: [string, string] = [casal.a || "Você", casal.b || "Amor"];
 

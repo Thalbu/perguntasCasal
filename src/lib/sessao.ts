@@ -31,7 +31,21 @@ export type Sessao = {
   reiniciar: () => void;
 };
 
-export function useSessao(banco: (nivelMaximo?: number) => Pergunta[]): Sessao {
+function contar(rodadas: Rodada[]): [number, number] {
+  return rodadas.reduce<[number, number]>(
+    (acc, r) => {
+      if (r.acertou) acc[r.vez] += 1;
+      return acc;
+    },
+    [0, 0],
+  );
+}
+
+export function useSessao(
+  banco: (nivelMaximo?: number) => Pergunta[],
+  /** chamado no fim da última rodada, ainda dentro do evento de clique */
+  aoTerminar?: (placar: [number, number], perguntas: number) => void,
+): Sessao {
   const [rodadas, setRodadas] = useState<Rodada[]>([]);
   const [indice, setIndice] = useState(0);
   const [fase, setFase] = useState<Fase>("intro");
@@ -56,13 +70,21 @@ export function useSessao(banco: (nivelMaximo?: number) => Pergunta[]): Sessao {
 
   const avancar = useCallback(
     (acertou?: boolean) => {
-      setRodadas((atuais) =>
-        atuais.map((r, i) => (i === indice ? { ...r, acertou } : r)),
+      const atualizadas = rodadas.map((r, i) =>
+        i === indice ? { ...r, acertou } : r,
       );
-      if (indice + 1 >= rodadas.length) setFase("fim");
-      else setIndice(indice + 1);
+      setRodadas(atualizadas);
+
+      if (indice + 1 < atualizadas.length) {
+        setIndice(indice + 1);
+        return;
+      }
+
+      setFase("fim");
+      // registrado aqui, no evento, e não num efeito reagindo à fase
+      aoTerminar?.(contar(atualizadas), atualizadas.length);
     },
-    [indice, rodadas.length],
+    [aoTerminar, indice, rodadas],
   );
 
   const reiniciar = useCallback(() => {
@@ -71,13 +93,7 @@ export function useSessao(banco: (nivelMaximo?: number) => Pergunta[]): Sessao {
     setFase("intro");
   }, []);
 
-  const placar = rodadas.reduce<[number, number]>(
-    (acc, r) => {
-      if (r.acertou) acc[r.vez] += 1;
-      return acc;
-    },
-    [0, 0],
-  );
+  const placar = contar(rodadas);
 
   return {
     fase,
